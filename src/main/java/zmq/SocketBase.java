@@ -26,6 +26,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class SocketBase extends Own implements IPollEvents, Pipe.IPipeEvents
 {
+    public long getReaperTs() {
+        return reaperTs;
+    }
+
     private static class EndpointPipe
     {
         private final Own endpoint;
@@ -106,6 +110,8 @@ public abstract class SocketBase extends Own implements IPollEvents, Pipe.IPipeE
 
     // Signaler to be used in the reaping stage
     private Signaler reaperSignaler;
+
+    private long reaperTs = 0;
 
     protected SocketBase(Ctx parent, int tid, int sid)
     {
@@ -1083,6 +1089,7 @@ public abstract class SocketBase extends Own implements IPollEvents, Pipe.IPipeE
         lock();
 
         try {
+            reaperTs = System.currentTimeMillis();
             //  Remove all existing signalers for thread safe sockets
             if (threadSafe) {
                 ((MailboxSafe) mailbox).clearSignalers();
@@ -1708,4 +1715,6 @@ public abstract class SocketBase extends Own implements IPollEvents, Pipe.IPipeE
             return address;
         }
     }
+
+
 }

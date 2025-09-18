@@ -38,8 +38,8 @@ import zmq.util.Z85;
  * and provides a reference manual for the functions provided by the ØMQ library.</p>
  *
  * <h2>Contexts</h2>
- * <p>Before using any ØMQ library functions you must create a {@link ZMQ.Context ØMQ context} using {@link ZMQ#context(int)}.
- * When you exit your application you must destroy the context using {@link ZMQ.Context#close()}.</p>
+ * <p>Before using any ØMQ library functions you must create a {@link Context ØMQ context} using {@link ZMQ#context(int)}.
+ * When you exit your application you must destroy the context using {@link Context#close()}.</p>
  *
  * <h3>Thread safety</h3>
  * A ØMQ context is thread safe and may be shared among as many application threads as necessary,
@@ -48,7 +48,7 @@ import zmq.util.Z85;
  * Individual ØMQ sockets are not thread safe except in the case
  * where full memory barriers are issued when migrating a socket from one thread to another.
  * <br>
- * In practice this means applications can create a socket in one thread with * {@link ZMQ.Context#socket(SocketType)}
+ * In practice this means applications can create a socket in one thread with * {@link Context#socket(SocketType)}
  * and then pass it to a newly created thread as part of thread initialization.
  *
  * <h3>Multiple contexts</h3>
@@ -63,7 +63,7 @@ import zmq.util.Z85;
  * they are considered to be opaque binary data.
  *
  * <h2>Sockets</h2>
- * {@link ZMQ.Socket ØMQ sockets} present an abstraction of a asynchronous message queue,
+ * {@link Socket ØMQ sockets} present an abstraction of a asynchronous message queue,
  * with the exact queueing semantics depending on the socket type in use.
  *
  * <h2>Transports</h2>
@@ -176,12 +176,12 @@ public class ZMQ
     @Deprecated
     public static final int QUEUE      = zmq.ZMQ.ZMQ_QUEUE;
     /**
-     * @see org.zeromq.ZMQ#PULL
+     * @see ZMQ#PULL
      */
     @Deprecated
     public static final int UPSTREAM   = PULL;
     /**
-     * @see org.zeromq.ZMQ#PUSH
+     * @see ZMQ#PUSH
      */
     @Deprecated
     public static final int DOWNSTREAM = PUSH;
@@ -201,7 +201,7 @@ public class ZMQ
      */
     public static final int EVENT_CONNECT_DELAYED    = zmq.ZMQ.ZMQ_EVENT_CONNECT_DELAYED;
     /**
-     * @see org.zeromq.ZMQ#EVENT_CONNECT_DELAYED
+     * @see ZMQ#EVENT_CONNECT_DELAYED
      */
     @Deprecated
     public static final int EVENT_DELAYED            = EVENT_CONNECT_DELAYED;
@@ -213,7 +213,7 @@ public class ZMQ
      */
     public static final int EVENT_CONNECT_RETRIED    = zmq.ZMQ.ZMQ_EVENT_CONNECT_RETRIED;
     /**
-     * @see org.zeromq.ZMQ#EVENT_CONNECT_RETRIED
+     * @see ZMQ#EVENT_CONNECT_RETRIED
      */
     @Deprecated
     public static final int EVENT_RETRIED            = EVENT_CONNECT_RETRIED;
@@ -550,6 +550,10 @@ public class ZMQ
             ctx = zmq.ZMQ.init(ioThreads);
         }
 
+        public Ctx getCtx() {
+            return ctx;
+        }
+
         /**
          * Returns true if terminate() has been called on ctx.
          */
@@ -685,8 +689,8 @@ public class ZMQ
          * The newly created socket is initially unbound, and not associated with any endpoints.
          * <br>
          * In order to establish a message flow a socket must first be connected
-         * to at least one endpoint with {@link org.zeromq.ZMQ.Socket#connect(String)},
-         * or at least one endpoint must be created for accepting incoming connections with {@link org.zeromq.ZMQ.Socket#bind(String)}.
+         * to at least one endpoint with {@link Socket#connect(String)},
+         * or at least one endpoint must be created for accepting incoming connections with {@link Socket#bind(String)}.
          *
          * @param type the socket type.
          * @return the newly created Socket.
@@ -753,14 +757,14 @@ public class ZMQ
          * <ul>
          * <li>Any blocking operations currently in progress on sockets open within context
          * shall return immediately with an error code of ETERM.
-         * With the exception of {@link ZMQ.Socket#close()}, any further operations on sockets
+         * With the exception of {@link Socket#close()}, any further operations on sockets
          * open within context shall fail with an error code of ETERM.</li>
          * <li>After interrupting all blocking calls, this method shall block until the following conditions are satisfied:
          * <ul>
-         * <li>All sockets open within context have been closed with {@link ZMQ.Socket#close()}.</li>
-         * <li>For each socket within context, all messages sent by the application with {@link ZMQ.Socket#send} have either
+         * <li>All sockets open within context have been closed with {@link Socket#close()}.</li>
+         * <li>For each socket within context, all messages sent by the application with {@link Socket#send} have either
          * been physically transferred to a network peer,
-         * or the socket's linger period set with the {@link ZMQ.Socket#setLinger(int)} socket option has expired.</li>
+         * or the socket's linger period set with the {@link Socket#setLinger(int)} socket option has expired.</li>
          * </ul>
          * </li>
          * </ul>
@@ -798,8 +802,8 @@ public class ZMQ
      * Further, messages may be queued in the event that a peer is unavailable to receive them.
      * <br>
      * Conventional sockets allow only strict one-to-one (two peers), many-to-one (many clients, one server), or in some cases one-to-many (multicast) relationships.
-     * With the exception of {@link ZMQ#PAIR}, ØMQ sockets may be connected to multiple endpoints using {@link ZMQ.Socket#connect(String)},
-     * while simultaneously accepting incoming connections from multiple endpoints bound to the socket using {@link ZMQ.Socket#bind(String)},
+     * With the exception of {@link ZMQ#PAIR}, ØMQ sockets may be connected to multiple endpoints using {@link Socket#connect(String)},
+     * while simultaneously accepting incoming connections from multiple endpoints bound to the socket using {@link Socket#bind(String)},
      * thus allowing many-to-many relationships.
      * <h2>Thread safety</h2>
      * ØMQ sockets are not thread safe. <strong>Applications MUST NOT use a socket from multiple threads</strong>
@@ -3257,12 +3261,12 @@ public class ZMQ
          * @param data  the data to send.
          * @param flags a combination (with + or |) of the flags defined below:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
-         *              For socket types ({@link org.zeromq.ZMQ#DEALER DEALER}, {@link org.zeromq.ZMQ#PUSH PUSH})
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
+         *              For socket types ({@link ZMQ#DEALER DEALER}, {@link ZMQ#PUSH PUSH})
          *              that block when there are no available peers (or all peers have full high-water mark),
          *              specifies that the operation should be performed in non-blocking mode.
          *              If the message cannot be queued on the socket, the method shall fail with errno set to EAGAIN.</li>
-         *              <li>{@link org.zeromq.ZMQ#SNDMORE SNDMORE}:
+         *              <li>{@link ZMQ#SNDMORE SNDMORE}:
          *              Specifies that the message being sent is a multi-part message,
          *              and that further message parts are to follow.</li>
          *              <li>0 : blocking send of a single-part message or the last of a multi-part message</li>
@@ -3306,12 +3310,12 @@ public class ZMQ
          * @param data  the data to send.
          * @param flags a combination (with + or |) of the flags defined below:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
-         *              For socket types ({@link org.zeromq.ZMQ#DEALER DEALER}, {@link org.zeromq.ZMQ#PUSH PUSH})
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
+         *              For socket types ({@link ZMQ#DEALER DEALER}, {@link ZMQ#PUSH PUSH})
          *              that block when there are no available peers (or all peers have full high-water mark),
          *              specifies that the operation should be performed in non-blocking mode.
          *              If the message cannot be queued on the socket, the method shall fail with errno set to EAGAIN.</li>
-         *              <li>{@link org.zeromq.ZMQ#SNDMORE SNDMORE}:
+         *              <li>{@link ZMQ#SNDMORE SNDMORE}:
          *              Specifies that the message being sent is a multi-part message,
          *              and that further message parts are to follow.</li>
          *              <li>0 : blocking send of a single-part message or the last of a multi-part message</li>
@@ -3336,12 +3340,12 @@ public class ZMQ
          * @param data  the data to send.
          * @param flags a combination (with + or |) of the flags defined below:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
-         *              For socket types ({@link org.zeromq.ZMQ#DEALER DEALER}, {@link org.zeromq.ZMQ#PUSH PUSH})
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
+         *              For socket types ({@link ZMQ#DEALER DEALER}, {@link ZMQ#PUSH PUSH})
          *              that block when there are no available peers (or all peers have full high-water mark),
          *              specifies that the operation should be performed in non-blocking mode.
          *              If the message cannot be queued on the socket, the method shall fail with errno set to EAGAIN.</li>
-         *              <li>{@link org.zeromq.ZMQ#SNDMORE SNDMORE}:
+         *              <li>{@link ZMQ#SNDMORE SNDMORE}:
          *              Specifies that the message being sent is a multi-part message,
          *              and that further message parts are to follow.</li>
          *              <li>0 : blocking send of a single-part message or the last of a multi-part message</li>
@@ -3368,12 +3372,12 @@ public class ZMQ
          * @param length the number of bytes to be sent.
          * @param flags  a combination (with + or |) of the flags defined below:
          *               <ul>
-         *               <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
-         *               For socket types ({@link org.zeromq.ZMQ#DEALER DEALER}, {@link org.zeromq.ZMQ#PUSH PUSH})
+         *               <li>{@link ZMQ#DONTWAIT DONTWAIT}:
+         *               For socket types ({@link ZMQ#DEALER DEALER}, {@link ZMQ#PUSH PUSH})
          *               that block when there are no available peers (or all peers have full high-water mark),
          *               specifies that the operation should be performed in non-blocking mode.
          *               If the message cannot be queued on the socket, the method shall fail with errno set to EAGAIN.</li>
-         *               <li>{@link org.zeromq.ZMQ#SNDMORE SNDMORE}:
+         *               <li>{@link ZMQ#SNDMORE SNDMORE}:
          *               Specifies that the message being sent is a multi-part message,
          *               and that further message parts are to follow.</li>
          *               <li>0 : blocking send of a single-part message or the last of a multi-part message</li>
@@ -3400,12 +3404,12 @@ public class ZMQ
          * @param data  ByteBuffer payload
          * @param flags a combination (with + or |) of the flags defined below:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
-         *              For socket types ({@link org.zeromq.ZMQ#DEALER DEALER}, {@link org.zeromq.ZMQ#PUSH PUSH})
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
+         *              For socket types ({@link ZMQ#DEALER DEALER}, {@link ZMQ#PUSH PUSH})
          *              that block when there are no available peers (or all peers have full high-water mark),
          *              specifies that the operation should be performed in non-blocking mode.
          *              If the message cannot be queued on the socket, the method shall fail with errno set to EAGAIN.</li>
-         *              <li>{@link org.zeromq.ZMQ#SNDMORE SNDMORE}:
+         *              <li>{@link ZMQ#SNDMORE SNDMORE}:
          *              Specifies that the message being sent is a multi-part message,
          *              and that further message parts are to follow.</li>
          *              <li>0 : blocking send of a single-part message or the last of a multi-part message</li>
@@ -3510,7 +3514,7 @@ public class ZMQ
          * <p>
          * @param flags either:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
          *              Specifies that the operation should be performed in non-blocking mode.
          *              If there are no messages available on the specified socket,
          *              the method shall fail with errno set to EAGAIN and return null.</li>
@@ -3540,7 +3544,7 @@ public class ZMQ
          * <p>
          * @param flags either:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
          *              Specifies that the operation should be performed in non-blocking mode.
          *              If there are no messages available on the specified socket,
          *              the method shall fail with errno set to EAGAIN and return null.</li>
@@ -3573,7 +3577,7 @@ public class ZMQ
          *               the message will be truncated.
          * @param flags  either:
          *               <ul>
-         *               <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
+         *               <li>{@link ZMQ#DONTWAIT DONTWAIT}:
          *               Specifies that the operation should be performed in non-blocking mode.
          *               If there are no messages available on the specified socket,
          *               the method shall fail with errno set to EAGAIN and return null.</li>
@@ -3599,7 +3603,7 @@ public class ZMQ
          * @param buffer the buffer to copy the zmq message payload into
          * @param flags  either:
          *               <ul>
-         *               <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
+         *               <li>{@link ZMQ#DONTWAIT DONTWAIT}:
          *               Specifies that the operation should be performed in non-blocking mode.
          *               If there are no messages available on the specified socket,
          *               the method shall fail with errno set to EAGAIN and return null.</li>
@@ -3634,7 +3638,7 @@ public class ZMQ
          *
          * @param flags either:
          *              <ul>
-         *              <li>{@link org.zeromq.ZMQ#DONTWAIT DONTWAIT}:
+         *              <li>{@link ZMQ#DONTWAIT DONTWAIT}:
          *              Specifies that the operation should be performed in non-blocking mode.
          *              If there are no messages available on the specified socket,
          *              the method shall fail with errno set to EAGAIN and return null.</li>
@@ -3728,7 +3732,7 @@ public class ZMQ
         protected void mayRaise()
         {
             int errno = base.errno();
-            if (errno != 0 && errno != zmq.ZError.EAGAIN) {
+            if (errno != 0 && errno != ZError.EAGAIN) {
                 throw new ZMQException(errno);
             }
         }
@@ -4363,9 +4367,9 @@ public class ZMQ
          *
          * It return objects of type:
          * <ul>
-         * <li> {@link org.zeromq.ZMonitor.ProtocolCode} for a handshake protocol error.</li>
-         * <li> {@link org.zeromq.ZMQ.Error} for any other error.</li>
-         * <li> {@link java.lang.Integer} when available.</li>
+         * <li> {@link ZMonitor.ProtocolCode} for a handshake protocol error.</li>
+         * <li> {@link Error} for any other error.</li>
+         * <li> {@link Integer} when available.</li>
          * <li> null when no relevant value available.</li>
          * </ul>
          * @param <M> The expected type of the returned object
@@ -4390,13 +4394,13 @@ public class ZMQ
      * <p>A socket using CURVE can be either client or server, at any moment, but not both. The role is independent of bind/connect direction.
      * A socket can change roles at any point by setting new options. The role affects all connect and bind calls that follow it.</p>
      *
-     * <p>To become a CURVE server, the application sets the {@link ZMQ.Socket#setAsServerCurve(boolean)} option on the socket,
-     * and then sets the {@link ZMQ.Socket#setCurveSecretKey(byte[])} option to provide the socket with its long-term secret key.
+     * <p>To become a CURVE server, the application sets the {@link Socket#setAsServerCurve(boolean)} option on the socket,
+     * and then sets the {@link Socket#setCurveSecretKey(byte[])} option to provide the socket with its long-term secret key.
      * The application does not provide the socket with its long-term public key, which is used only by clients.</p>
      *
-     * <p>To become a CURVE client, the application sets the {@link ZMQ.Socket#setCurveServerKey(byte[])} option
+     * <p>To become a CURVE client, the application sets the {@link Socket#setCurveServerKey(byte[])} option
      * with the long-term public key of the server it intends to connect to, or accept connections from, next.
-     * The application then sets the {@link ZMQ.Socket#setCurvePublicKey(byte[])} and {@link ZMQ.Socket#setCurveSecretKey(byte[])} options with its client long-term key pair.
+     * The application then sets the {@link Socket#setCurvePublicKey(byte[])} and {@link Socket#setCurveSecretKey(byte[])} options with its client long-term key pair.
      * If the server does authentication it will be based on the client's long term public key.</p>
      *
      * <h3>Key encoding</h3>

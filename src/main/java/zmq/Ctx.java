@@ -540,7 +540,16 @@ public class Ctx
         }
     }
 
-    void destroySocket(SocketBase socket)
+    public boolean containSocket(SocketBase socket) {
+        slotSync.lock();
+        try {
+            return sockets.contains(socket);
+        } finally {
+            slotSync.unlock();
+        }
+    }
+
+    public void destroySocket(SocketBase socket)
     {
         slotSync.lock();
 

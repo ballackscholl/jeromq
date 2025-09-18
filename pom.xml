@@ -3,7 +3,7 @@
   <groupId>org.zeromq</groupId>
   <artifactId>jeromq</artifactId>
   <packaging>jar</packaging>
-  <version>0.5.4</version>
+  <version>0.5.4_fix</version>
   <name>JeroMQ</name>
   <description>Pure Java implementation of libzmq</description>
   <url>https://github.com/zeromq/jeromq</url>
@@ -45,16 +45,6 @@
       <version>1.0.0</version>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
   <build>
     <plugins>
       <plugin>
@@ -128,16 +118,7 @@
           <goals>deploy</goals>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-           <serverId>ossrh</serverId>
-           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-           <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
+
     </plugins>
     <pluginManagement>
       <plugins>
@@ -488,4 +469,16 @@
       </build>
     </profile>
    </profiles>
+    <distributionManagement>
+        <repository>
+            <id>user-release</id>
+            <name>User Project Release</name>
+            <url>http://nexus.moji.com/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>user-snapshots</id>
+            <name>User Project SNAPSHOTS</name>
+            <url>http://nexus.moji.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
