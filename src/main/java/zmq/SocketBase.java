@@ -1,5 +1,7 @@
 package zmq;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import zmq.io.IOThread;
 import zmq.io.SessionBase;
 import zmq.io.net.Address;
@@ -26,6 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class SocketBase extends Own implements IPollEvents, Pipe.IPipeEvents
 {
+    private static final Logger LOG = LoggerFactory.getLogger("JEROMQ");
+
     public long getReaperTs() {
         return reaperTs;
     }
@@ -1089,6 +1093,8 @@ public abstract class SocketBase extends Own implements IPollEvents, Pipe.IPipeE
         lock();
 
         try {
+            LOG.info("Socket closed will send reap tid:{}", this.getTid());
+
             reaperTs = System.currentTimeMillis();
             //  Remove all existing signalers for thread safe sockets
             if (threadSafe) {

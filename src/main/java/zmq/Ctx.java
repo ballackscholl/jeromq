@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQException;
 
 import zmq.io.IOThread;
@@ -36,6 +38,8 @@ import zmq.util.MultiMap;
 public class Ctx
 {
     private static final int WAIT_FOREVER = -1;
+
+    private static final Logger LOG = LoggerFactory.getLogger("JEROMQ");
 
     //  Information associated with inproc endpoint. Note that endpoint options
     //  are registered as well so that the peer can access them without a need
@@ -558,6 +562,8 @@ public class Ctx
             int tid = socket.getTid();
             emptySlots.add(tid);
             slots[tid] = null;
+
+            LOG.info("destroySocket add emptySlots tid:{}", socket.getTid());
 
             //  Remove the socket from the list of sockets.
             sockets.remove(socket);
